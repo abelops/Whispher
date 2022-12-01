@@ -1,0 +1,22 @@
+GET http://localhost:5000/vent
+
+###
+POST   http://localhost:5000/vent
+Content-Type: application/json
+
+{
+    "title":"second post",
+    "content":"second content",
+    "tag":"posts",
+    "likes":10,
+    "dislikes":4
+}
+###
+PUT    http://localhost:5000/vent
+Content-Type: application/json
+
+{
+    "id":2,
+    "likes":13,
+    "dislikes":4
+}
