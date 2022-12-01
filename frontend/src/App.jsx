@@ -145,7 +145,7 @@ function App() {
         algorithm: theme.darkAlgorithm,
       }}
     >
-    <div className="sticky top-0 h-28 bg-[rgba(36,36,36,0.8)] z-10 w-full">
+    <div className="sticky top-0 h-28 z-10 w-full backdrop-blur-sm bg-[rgba(36,36,36,0.8)]/30">
       <Title className="pt-2">Whispher</Title>
     </div>
 
