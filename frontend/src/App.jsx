@@ -125,7 +125,7 @@ function App() {
       tag.map((val)=>{
         console.log(val)
         console.log(tr)
-        if(ind.tags.includes(val)){
+        if(ind.tag.includes(val)){
           tr.push(ind)
         }
       })
