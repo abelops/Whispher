@@ -21,6 +21,7 @@ function App() {
   const [whisps, setWhisps] = useState([])
   const [filtered, setFiltered] = useState([])
   const [tags, setTags] = useState([])
+  const [tag, setTag] = useState([])
 
   // const post = ()=>{
 
@@ -55,11 +56,13 @@ function App() {
     setLoading(true)
     const req = fetch(`http://3.234.211.38:5000/${act}/`+id).then((res)=>{
       fetchDat()
+      setLoading(false)
     })
     .catch((err)=>{
       console.log(err)
+      setLoading(false)
     })
-    setLoading(false)
+    
   }
 
   const CustomCard = (val)=>{
@@ -113,6 +116,22 @@ function App() {
       title: e.target.value
     })
   }
+  const updateTag = (value)=>{
+    setTag(value)
+  }
+  const filter = ()=>{
+    let tr = []
+    whisps.map((ind)=>{
+      tag.map((val)=>{
+        console.log(val)
+        console.log(tr)
+        if(ind.tags.includes(val)){
+          tr.push(ind)
+        }
+      })
+    })
+    setFiltered(tr)
+  }
   const contentChange = (e) => {
     setPostCont({
       ...postCont,
@@ -133,11 +152,12 @@ function App() {
     .then(async (res)=>{
       res = await res.json()
       fetchDat()
+      setLoading(false)
     })
     .catch((err)=>{
       console.log(err)
+      setLoading(false)
     })
-    setLoading(false)
   }
   return (
     <ConfigProvider
@@ -217,11 +237,11 @@ function App() {
           mode="tags"
           placeholder="Select tag"
           defaultValue={[]}
-          onChange={tagChange}
+          onChange={updateTag}
           options={tags}
           className="inline-block w-32 mr-2"
         />
-      <Button dark={false} type="primary" className="bg-sky-700">Filter</Button>
+      <Button dark={false} type="primary" className="bg-sky-700" onClick={filter}>Filter</Button>
       <Divider />
     </div>
     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>

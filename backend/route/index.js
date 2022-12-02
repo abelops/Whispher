@@ -4,6 +4,6 @@ const vent = require('../controller/index.js')
 
 router.get('/', vent.getVent)
 router.post('/', vent.createVent)
-router.put('/', vent.updateVent)
+router.get('/:status/:id', vent.updateVent)
 
 module.exports = router

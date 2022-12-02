@@ -14,9 +14,10 @@ module.exports = {
     },
 
     updateVent: async function updateVent(req,res){
-        const{id,likes,dislikes} = req.body
-        const vent = await knex('vent').where({id}).update({likes,dislikes})
-        console.log("vent")
-        res.json(vent)
+        const id = req.params.id
+        console.log(id)
+        // const vent = await knex('vent').where({id}).update({likes,dislikes})
+        // console.log("vent")
+        res.json(id)
     }
 }

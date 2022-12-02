@@ -1,18 +1,18 @@
-GET http://localhost:5000/vent
+GET http://3.234.211.38:5000
 
 ###
-POST   http://localhost:5000/vent
+POST   http://3.234.211.38:5000
 Content-Type: application/json
 
 {
-    "title":"second post",
-    "content":"second content",
+    "title":"not working third post",
+    "content":"third content",
     "tag":"posts",
-    "likes":10,
-    "dislikes":4
+    "likes":50,
+    "dislikes":30
 }
 ###
-PUT    http://localhost:5000/vent
+GET     http://3.234.211.38:5000/like/1
 Content-Type: application/json
 
 {
