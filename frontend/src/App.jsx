@@ -22,7 +22,8 @@ function App() {
   const [filtered, setFiltered] = useState([])
   const [tags, setTags] = useState([])
   const [tag, setTag] = useState([])
-
+  const [sortBy, setSortBy] = useState("Time")
+  const [sort, setSort] = useState("Descending")
   // const post = ()=>{
 
   // }
@@ -34,7 +35,11 @@ function App() {
         fin.map((ind)=>{
           ind.tag&&
           ind.tag.split("#").map((tg)=>{
-            if(!tr.includes("#"+tg) && tg!=""){
+            let yy = {
+              value: "#"+tg,
+              label: "#"+tg,
+            }
+            if(!tr.includes("#"+tg) && tg!="" && !tr.includes(yy)){
               tr.push({
                 value: "#"+tg,
                 label: "#"+tg,
@@ -42,7 +47,8 @@ function App() {
             }
           })
         })
-          
+        tr = [...new Set(tr)]
+        console.log(tr)
         setTags(tr)
         setWhisps(fin)
         setFiltered(fin)
@@ -65,6 +71,36 @@ function App() {
     
   }
 
+  const filter = ()=>{
+    setLoading(true)
+    let tr = []
+    whisps.map((ind)=>{
+      // console.log(ind)
+      if(tag.length>0){
+        tag.map((val)=>{
+          if(ind.tag){
+            if(ind.tag.includes(val) && !tr.includes(ind)){
+              tr.push(ind)
+            }
+          }
+        })
+        setFiltered(tr)
+      }
+    })
+    let tem = filtered
+    console.log(sortBy)
+    if(sortBy=="Time")
+      tem.sort((p1, p2) => (p1.stamp < p2.stamp) ? 1 : (p1.stamp > p2.stamp) ? -1 : 0);
+    else if(sortBy=="Likes")
+      tem.sort((p1, p2) => (p1.likes < p2.likes) ? 1 : (p1.likes > p2.likes) ? -1 : 0);
+    else if(sortBy=="Dislikes")
+      tem.sort((p1, p2) => (p1.dislikes < p2.dislikes) ? 1 : (p1.dislikes > p2.dislikes) ? -1 : 0);
+    if(sort=="Descending")
+      tem.reverse()
+    setFiltered(tem)
+    setLoading(false)
+    
+  }
   const CustomCard = (val)=>{
     let ar = []
     return(
@@ -92,6 +128,7 @@ function App() {
   }
   useEffect(()=>{
     fetchDat()
+    filter()
   },[])
   const options = [
     {
@@ -104,7 +141,11 @@ function App() {
     }
     ];
   const tagChange = (value) => {
-    let v = value.toString().replaceAll(",", "")
+    // let v = value.toString().replaceAll(",", "")
+    let v = ""
+    value.map((vall)=>{
+      v+="#"+val
+    })
     setPostCont({
       ...postCont,
       tag: v
@@ -117,21 +158,10 @@ function App() {
     })
   }
   const updateTag = (value)=>{
+    console.log(tag)
     setTag(value)
   }
-  const filter = ()=>{
-    let tr = []
-    whisps.map((ind)=>{
-      tag.map((val)=>{
-        console.log(val)
-        console.log(tr)
-        if(ind.tag.includes(val)){
-          tr.push(ind)
-        }
-      })
-    })
-    setFiltered(tr)
-  }
+  
   const contentChange = (e) => {
     setPostCont({
       ...postCont,
@@ -159,6 +189,18 @@ function App() {
       setLoading(false)
     })
   }
+
+
+  const updateSortBy = (value)=>{
+    console.log(value.value)
+    setSortBy(value.value)
+    filter()
+  }
+  const updateSort = (value)=>{
+    console.log(value.value)
+    setSort(value.value)
+    filter()
+  }
   return (
     <ConfigProvider
       theme={{
@@ -166,13 +208,13 @@ function App() {
       }}
     >
     <div className="sticky top-0 h-28 z-10 w-full backdrop-blur-sm bg-[rgba(36,36,36,0.8)]/30">
-      <Title className="pt-2">Whispher</Title>
+      <Title className="pt-2">Whisper</Title>
     </div>
 
     <div className="flex justify-center">
       <div className="mt-2 w-[400px]">
-        <Input type="text" placeholder="Title of your Whispher" onChange={titleChange} />
-        <TextArea rows={4} placeholder="Whisphers here :)"
+        <Input type="text" placeholder="Title of your Whisper" onChange={titleChange} />
+        <TextArea rows={4} placeholder="Whispers here :)"
           onChange={contentChange} 
           autoSize={{
             minRows: 3,
@@ -191,10 +233,11 @@ function App() {
           <Button className="mt-2 w-full bg-sky-700" type="primary" dark={false} onClick={sendPost}>Whisp</Button>
       </div>
     </div>
-    <Divider orientation="center">Whisphers</Divider>
+    <Divider orientation="center">Whispers</Divider>
     <div className="mb-4">
       <Select
         labelInValue
+        onChange={updateSortBy}
         defaultValue={{
           value: 'Time',
           label: 'Time',
@@ -217,6 +260,7 @@ function App() {
       />
       <Select
         labelInValue
+        onChange={updateSort}
         defaultValue={{
           value: 'Ascending',
           label: 'Ascending',
