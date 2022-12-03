@@ -103,8 +103,10 @@ function App() {
   }
   const CustomCard = (val)=>{
     let ar = []
+    let dat = new Date(val.vals.stamp).toString().split(" ")
     return(
       <Card title={val.vals.title} bordered={false} loading={false} style={{ width: 300, marginLeft: 15, marginTop: 15, }}>
+        <p className="absolute top-0 left-20 text-gray-200/30 text-xs">{dat[0]+ " " + dat[1] + " "+ dat[2]+ " "+dat[3]+" "+dat[4]}</p>
         <p className="mb-4">{val.vals.content}</p>
         <div className="absolute bottom-2 mt-2 w-full left-2">
           {
