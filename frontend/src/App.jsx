@@ -79,7 +79,7 @@ function App() {
       if(tag.length>0){
         tag.map((val)=>{
           if(ind.tag){
-            if(ind.tag.includes(val) && !tr.includes(ind)){
+            if(ind.tag.includes(val)){
               tr.push(ind)
             }
           }
@@ -87,7 +87,7 @@ function App() {
         setFiltered(tr)
       }
     })
-    let tem = filtered
+    let tem = tr
     console.log(sortBy)
     if(sortBy=="Time")
       tem.sort((p1, p2) => (p1.stamp < p2.stamp) ? 1 : (p1.stamp > p2.stamp) ? -1 : 0);
