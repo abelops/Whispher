@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {Card, Button, Input, ConfigProvider, theme, Divider, Row, Typography, Mentions, Select, Spin  } from 'antd'
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -24,6 +24,11 @@ function App() {
   const [tag, setTag] = useState([])
   const [sortBy, setSortBy] = useState("Time")
   const [sort, setSort] = useState("Descending")
+
+  // Force update
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+
   // const post = ()=>{
 
   // }
@@ -48,9 +53,10 @@ function App() {
           })
         })
         tr = [...new Set(tr)]
-        console.log(tr)
         setTags(tr)
         setWhisps(fin)
+        fin.sort((p1, p2) => (p1.stamp < p2.stamp) ? 1 : (p1.stamp > p2.stamp) ? -1 : 0);
+        console.log(fin)
         setFiltered(fin)
         setLoading(false)
       })
@@ -74,7 +80,7 @@ function App() {
   const filter = ()=>{
     setLoading(true)
     let tr = []
-    whisps.map((ind)=>{
+    filtered.map((ind)=>{
       // console.log(ind)
       if(tag.length>0){
         tag.map((val)=>{
@@ -84,28 +90,60 @@ function App() {
             }
           }
         })
-        setFiltered(tr)
       }
     })
+    if(tr.length==0){
+      tr = whisps
+    }
     let tem = tr
     console.log(sortBy)
     if(sortBy=="Time")
-      tem.sort((p1, p2) => (p1.stamp < p2.stamp) ? 1 : (p1.stamp > p2.stamp) ? -1 : 0);
+      tem.sort((p1, p2) => (p1.stamp > p2.stamp) ? 1 : (p1.stamp < p2.stamp) ? -1 : 0);
     else if(sortBy=="Likes")
-      tem.sort((p1, p2) => (p1.likes < p2.likes) ? 1 : (p1.likes > p2.likes) ? -1 : 0);
+      tem.sort((p1, p2) => (p1.likes > p2.likes) ? 1 : (p1.likes < p2.likes) ? -1 : 0);
     else if(sortBy=="Dislikes")
-      tem.sort((p1, p2) => (p1.dislikes < p2.dislikes) ? 1 : (p1.dislikes > p2.dislikes) ? -1 : 0);
+      tem.sort((p1, p2) => (p1.dislikes > p2.dislikes) ? 1 : (p1.dislikes < p2.dislikes) ? -1 : 0);
     if(sort=="Descending")
       tem.reverse()
     setFiltered(tem)
+    forceUpdate()
     setLoading(false)
     
   }
+
+  const filterByTag = ()=>{
+    setLoading(true)
+    let tr = []
+    filtered.map((ind)=>{
+      // console.log(ind)
+      if(tag.length>0){
+        tag.map((val)=>{
+          if(ind.tag){
+            if(ind.tag.includes(val)){
+              tr.push(ind)
+            }
+          }
+        })
+      }
+    })
+    if(tr.length>0){
+      setFiltered(tr)
+      forceUpdate()
+    }
+    else{
+      setFiltered(whisps)
+      forceUpdate()
+      filter()
+    }
+    setLoading(false)
+  }
+
+  
   const CustomCard = (val)=>{
     let ar = []
     let dat = new Date(val.vals.stamp).toString().split(" ")
     return(
-      <Card title={val.vals.title} bordered={false} loading={false} style={{ width: 300, marginLeft: 15, marginTop: 15, }}>
+      <Card title={val.vals.title} key={val.vals.id} bordered={false} loading={false} style={{ width: 300, marginLeft: 15, marginTop: 15, }}>
         <p className="absolute top-0 left-20 text-gray-200/30 text-xs">{dat[0]+ " " + dat[1] + " "+ dat[2]+ " "+dat[3]+" "+dat[4]}</p>
         <p className="mb-4">{val.vals.content}</p>
         <div className="absolute bottom-2 mt-2 w-full left-2">
@@ -114,7 +152,7 @@ function App() {
             val.vals.tag.split("#").map((tg)=>{
               if(tg.length>0){
                 return(
-                  <p className="relative bottom-0 inline-block text-sky-400 cursor-pointer mr-2">#{tg}</p>
+                  <p className="relative bottom-0 inline-block text-sky-400 cursor-pointer mr-2" key={Math.random()}>#{tg}</p>
                 )
               }
 
@@ -130,6 +168,9 @@ function App() {
   }
   useEffect(()=>{
     fetchDat()
+  },[])
+
+  useEffect(()=>{
     filter()
   },[])
   const options = [
@@ -144,8 +185,9 @@ function App() {
     ];
   const tagChange = (value) => {
     // let v = value.toString().replaceAll(",", "")
+    console.log(value)
     let v = ""
-    value.map((vall)=>{
+    value.map((val)=>{
       v+="#"+val
     })
     setPostCont({
@@ -164,6 +206,9 @@ function App() {
     setTag(value)
   }
   
+  useEffect(()=>{
+    filter()
+  },[sortBy, sort, tag])
   const contentChange = (e) => {
     setPostCont({
       ...postCont,
@@ -196,12 +241,12 @@ function App() {
   const updateSortBy = (value)=>{
     console.log(value.value)
     setSortBy(value.value)
-    filter()
+    // filter()
   }
   const updateSort = (value)=>{
     console.log(value.value)
     setSort(value.value)
-    filter()
+    // filter()
   }
   return (
     <ConfigProvider
@@ -264,8 +309,8 @@ function App() {
         labelInValue
         onChange={updateSort}
         defaultValue={{
-          value: 'Ascending',
-          label: 'Ascending',
+          value: 'Descending',
+          label: 'Descending',
         }}
         className="mr-2"
         options={[
